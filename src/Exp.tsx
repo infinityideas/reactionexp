@@ -1,4 +1,7 @@
 import React from "react";
+import { settings } from "./scripts/config";
+
+const axios = require('axios');
 
 interface ExpState {
     ready: boolean,
@@ -8,7 +11,8 @@ interface ExpState {
     showingImage: boolean,
     waited: boolean,
     waiting: boolean,
-    started: boolean
+    started: boolean,
+    toSubmit: Object,
 }
 
 class Exp extends React.Component<{}, ExpState> {
@@ -25,7 +29,8 @@ class Exp extends React.Component<{}, ExpState> {
             showingImage: false,
             waited: false,
             waiting: false,
-            started: false
+            started: false,
+            toSubmit: {}
         }
 
         this.timeout = -99;
@@ -34,10 +39,11 @@ class Exp extends React.Component<{}, ExpState> {
     }
 
     keyDown(e: any) {
+        const timeTaken = Date.now()-this.currentTime;
         if (e.keyCode == 90 && !this.state.waiting) { // Check for non symmetric
-            console.log("NON SYMMETRIC IMAGE "+this.state.currentImage+" | "+(Date.now()-this.currentTime)+"ms taken | "+this.state.images[this.state.currentImage]);
+            console.log("NON SYMMETRIC IMAGE "+this.state.currentImage+" | "+(Date.now()-this.currentTime)+"ms taken | "+this.state.images[this.state.order[this.state.currentImage]]);
         } else if (e.keyCode == 77 && !this.state.waiting) { // Check for symmetric
-            console.log("NON SYMMETRIC IMAGE "+this.state.currentImage+" | "+(Date.now()-this.currentTime)+"ms taken | "+this.state.images[this.state.currentImage]);
+            console.log("SYMMETRIC IMAGE "+this.state.currentImage+" | "+(Date.now()-this.currentTime)+"ms taken | "+this.state.images[this.state.order[this.state.currentImage]]);
         } else if (e.keyCode == 13 && !this.state.waited) {
             this.setState({
                 waiting: true
@@ -52,6 +58,26 @@ class Exp extends React.Component<{}, ExpState> {
         }
 
         if ((e.keyCode == 90) || (e.keyCode == 77) && !this.state.waiting) {
+            let currentSubmit: any = this.state.toSubmit;
+            currentSubmit[this.state.currentImage.toString()] = {
+                time: timeTaken,
+                imageNumber: this.state.order[this.state.currentImage],
+                imageURL: this.state.images[this.state.order[this.state.currentImage]],
+                answer: e.keyCode == 90 ? "NS" : "S"
+            }
+
+            if (this.state.currentImage+1 == this.state.images.length) {
+                console.log(currentSubmit);
+                axios.post(settings.flaskServer+"data", JSON.stringify(currentSubmit), {
+                    headers: {
+                        'content-type': 'application/json',
+                        'x-api-key': settings.KORAPIKey
+                    }
+                }).then((resp: any) => {
+                    console.log(resp);
+                })
+                return;
+            }
             if (this.timeout != -99) {
                 clearTimeout(this.timeout);
             }
@@ -62,7 +88,8 @@ class Exp extends React.Component<{}, ExpState> {
                 this.setState({
                     waiting: false,
                     showingImage: true,
-                    currentImage: this.state.currentImage+1
+                    currentImage: this.state.currentImage+1,
+                    toSubmit: currentSubmit
                 })
             }, 1000)
             
@@ -70,33 +97,24 @@ class Exp extends React.Component<{}, ExpState> {
     }
 
     componentDidMount() {
-        const urls = [
-            "https://res.cloudinary.com/ddup446vc/image/upload/v1656009160/symmetry/NS4_2_zszmai.png",
-            "https://res.cloudinary.com/ddup446vc/image/upload/v1656009160/symmetry/NS4_4_u0bskb.png",
-            "https://res.cloudinary.com/ddup446vc/image/upload/v1656009160/symmetry/NS4_3_r1x4bv.png",
-            "https://res.cloudinary.com/ddup446vc/image/upload/v1656009160/symmetry/NS4_1_ftebte.png",
-            "https://res.cloudinary.com/ddup446vc/image/upload/v1656009160/symmetry/NS4_5_htulid.png",
-            "https://res.cloudinary.com/ddup446vc/image/upload/v1656009156/symmetry/S4_1_qdtc91.png",
-            "https://res.cloudinary.com/ddup446vc/image/upload/v1656009156/symmetry/S4_4_oizpmx.png",
-            "https://res.cloudinary.com/ddup446vc/image/upload/v1656009155/symmetry/S4_5_kaeqx0.png",
-            "https://res.cloudinary.com/ddup446vc/image/upload/v1656009155/symmetry/S4_2_ewosk0.png",
-            "https://res.cloudinary.com/ddup446vc/image/upload/v1656009155/symmetry/S4_3_qhogll.png",
-        ]
+        axios.get(settings.flaskServer+"getimages_order", {
+            headers: {
+                'x-api-key': settings.KORAPIKey
+            }
+        }).then((response: any) => {
+            response["data"]["links"].forEach((picture: string) => {
+                new Image().src = picture
+            });
 
-        let order = [3, 7, 6, 1, 9, 0, 4, 2, 5, 8];
+            document.addEventListener("keydown", this.keyDown);
 
-        urls.forEach((picture: string) => {
-            new Image().src = picture
-        })
-
-        document.addEventListener("keydown", this.keyDown);
-
-        this.setState({
-            order: order,
-            images: urls,
-            ready: true,
-            showingImage: true,
-        })
+            this.setState({
+                order: response["data"]["order"],
+                images: response["data"]["links"],
+                ready: true,
+                showingImage: true
+            })
+        });
     }
 
     componentDidUpdate() {
