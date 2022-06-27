@@ -47,11 +47,7 @@ class Exp extends React.Component<{}, ExpState> {
 
     keyDown(e: any) {
         const timeTaken = Date.now()-this.currentTime;
-        if (e.keyCode === 67 && !this.state.waiting && this.state.waited) { // Check for non symmetric
-            console.log("NON SYMMETRIC IMAGE "+this.state.currentImage+" | "+(Date.now()-this.currentTime)+"ms taken | "+this.state.images[this.state.order[this.state.currentImage]]);
-        } else if (e.keyCode === 77 && !this.state.waiting && this.state.waited) { // Check for symmetric
-            console.log("SYMMETRIC IMAGE "+this.state.currentImage+" | "+(Date.now()-this.currentTime)+"ms taken | "+this.state.images[this.state.order[this.state.currentImage]]);
-        } else if ((e.keyCode === 67 || e.keyCode === 77) && !this.state.waited) {
+        if ((e.keyCode === 67 || e.keyCode === 77) && !this.state.waited) {
             this.setState({
                 waiting: true
             })
@@ -79,7 +75,6 @@ class Exp extends React.Component<{}, ExpState> {
             }
 
             if (this.state.currentImage+1 === this.state.images.length) {
-                console.log(currentSubmit);
                 axios.post(settings.flaskServer+"data", JSON.stringify(currentSubmit), {
                     headers: {
                         'content-type': 'application/json',
