@@ -19,7 +19,7 @@ function App() {
         Try to respond as quickly as possible <strong style={{color: 'red'}}>without compromising accuracy</strong>, 
         although the computer will wait for you to answer before moving on to the next image.
         <br/>Place one finger from your left hand on the c key and one from your right hand on the m key.</h3><br/>
-        <h3>Click the "<span style={{color: "green"}}>Let's go</span>" button at the bottom of this page to start the study.</h3>
+        <h3>Click the "<span style={{color: "green"}}>Let's go</span>" button at the bottom of this page to start the practice round.</h3>
       <br/>
       <img src={example} width="35%" /><br/><br/>
       <Link to="practice"><button style={{width: "100px", height: 50, color: "green"}}>Let's go!</button></Link>
