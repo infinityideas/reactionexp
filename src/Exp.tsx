@@ -130,7 +130,7 @@ class Exp extends React.Component<ExpProps, ExpState> {
                     currentImage: this.state.currentImage+1,
                     toSubmit: currentSubmit
                 })
-            }, settings.time)
+            }, settings.waittime)
             
         }
     }
@@ -184,7 +184,7 @@ class Exp extends React.Component<ExpProps, ExpState> {
                 showingImage: true,
                 currentImage: this.state.currentImage+1,
             })
-        }, settings.time)
+        }, settings.waittime)
     }
 
     render() {
