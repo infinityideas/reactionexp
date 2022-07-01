@@ -23,7 +23,7 @@ function Finished(props: FinishedProps) {
         return (
             <div style={{textAlign: "center", fontFamily: "sans-serif"}}>
                 {basicTemplate}
-                <p>You passed! Ready to start the real thing?</p>
+                <p><span style={{color: "red"}}>This was a practice round.</span> You passed! Ready to start the real thing?</p>
                 <a href="/exp"><button>Continue!</button></a>
             </div>
         )
@@ -31,7 +31,7 @@ function Finished(props: FinishedProps) {
         return (
             <div style={{textAlign: "center", fontFamily: "sans-serif"}}>
                 {basicTemplate}
-                <p>Unfortunately you didn't get the required accuracy. Try again!</p>
+                <p><span style={{color: "red"}}>This was a practice round.</span> Unfortunately you didn't get the required accuracy. Try again!</p>
                 <button onClick={() => {window.location.reload()}}>Try again</button>
             </div>
         )
