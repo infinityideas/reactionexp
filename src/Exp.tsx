@@ -18,6 +18,9 @@ interface ExpState {
     break: boolean,
 }
 
+const nsKey: number = settings.nsKey;
+const sKey: number = settings.sKey;
+
 class Exp extends React.Component<{}, ExpState> {
     private timeout: any
     private currentTime: number
@@ -47,7 +50,7 @@ class Exp extends React.Component<{}, ExpState> {
 
     keyDown(e: any) {
         const timeTaken = Date.now()-this.currentTime;
-        if ((e.keyCode === 67 || e.keyCode === 77) && !this.state.waited) {
+        if ((e.keyCode === nsKey || e.keyCode === sKey) && !this.state.waited) {
             this.setState({
                 waiting: true
             })
@@ -61,17 +64,17 @@ class Exp extends React.Component<{}, ExpState> {
             return
         }
 
-        if (((e.keyCode === 67) || (e.keyCode === 77)) && this.state.break) {
+        if (((e.keyCode === nsKey) || (e.keyCode === sKey)) && this.state.break) {
             this.afterBreak();
         }
 
-        if (((e.keyCode === 67) || (e.keyCode === 77)) && !this.state.waiting && this.state.waited && !this.state.break) {
+        if (((e.keyCode === nsKey) || (e.keyCode === sKey)) && !this.state.waiting && this.state.waited && !this.state.break) {
             let currentSubmit: any = this.state.toSubmit;
             currentSubmit[this.state.currentImage.toString()] = {
                 time: timeTaken,
                 imageNumber: this.state.order[this.state.currentImage],
                 imageURL: this.state.images[this.state.order[this.state.currentImage]],
-                answer: e.keyCode === 67 ? "NS" : "S"
+                answer: e.keyCode === nsKey ? "NS" : "S"
             }
 
             if (this.state.currentImage+1 === this.state.images.length) {
