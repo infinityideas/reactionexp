@@ -1,5 +1,5 @@
 export const settings = {
-    time: 1000,
+    time: 300,
     flaskServer: "https://dariussinhan.korconnect.io/Symmetry-Exp-Dev/",
     KORAPIKey: "EkOfgI71oa2mOR181tcMhHFpJUldRK43X9U5bXj5",
     nsKey: 65,

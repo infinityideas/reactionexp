@@ -89,7 +89,7 @@ class Exp extends React.Component<ExpProps, ExpState> {
             }
 
             if ((this.state.currentImage+1 === this.state.images.length)) {
-                if (this.props.type == "practice") {
+                if (this.props.type == "practice" || this.props.type == "ne") {
                     this.setState({
                         finished: true,
                         HITID: "Your HIT ID would appear here!",
@@ -130,7 +130,7 @@ class Exp extends React.Component<ExpProps, ExpState> {
                     currentImage: this.state.currentImage+1,
                     toSubmit: currentSubmit
                 })
-            }, 1000)
+            }, settings.time)
             
         }
     }
@@ -165,7 +165,7 @@ class Exp extends React.Component<ExpProps, ExpState> {
                 this.setState({
                     showingImage: false
                 })
-            }, 1000)
+            }, settings.time)
             
         }
     }
@@ -184,7 +184,7 @@ class Exp extends React.Component<ExpProps, ExpState> {
                 showingImage: true,
                 currentImage: this.state.currentImage+1,
             })
-        }, 1000)
+        }, settings.time)
     }
 
     render() {
@@ -197,16 +197,20 @@ class Exp extends React.Component<ExpProps, ExpState> {
             if (this.props.type=="practice") {
                 if (get_accuracy(this.state.toSubmit, this.state.images.length) >= settings.practice_required_acc) {
                     return (
-                        <Finished HITID={this.state.HITID} type="practice-pass"/>
+                        <Finished HITID={this.state.HITID} type="practice-pass" accuracy={get_accuracy(this.state.toSubmit, this.state.images.length)}/>
                     )
                 } else {
                     return (
-                        <Finished HITID={this.state.HITID} type="practice-fail"/>
+                        <Finished HITID={this.state.HITID} type="practice-fail" accuracy={get_accuracy(this.state.toSubmit, this.state.images.length)}/>
                     )
                 }
-            } else {
+            } else if (this.props.type=="exp") {
                 return (
-                    <Finished HITID={this.state.HITID} type="exp"/>
+                    <Finished HITID={this.state.HITID} type="exp" accuracy={0}/>
+                )
+            } else if (this.props.type == "ne") {
+                return (
+                    <Finished HITID={this.state.HITID} type="ne" accuracy={get_accuracy(this.state.toSubmit, this.state.images.length)}/>
                 )
             }
         }

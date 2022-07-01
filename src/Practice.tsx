@@ -15,7 +15,7 @@ class Practice extends React.Component{
     render() {
         return (
             <div className="container">
-                <h1>Practice!</h1>
+                <h1>Instructions!</h1>
                 <h3>How this will work:</h3>
                 <h3 style={{color: "red"}}>These are the same steps you will take on the real study.</h3>
                 <hr/>
@@ -29,12 +29,13 @@ class Practice extends React.Component{
                 </h2>
                 <h2 style={{border: "1px solid blue", paddingBottom: "10px"}}><span style={{color: "red"}}>Step Three:</span> Classify the image.
                     <br/><img src={Step3} width="50%" style={{boxShadow: "10px 10px 10px lightblue"}}/>
-                    <p style={{fontSize: "0.75em"}}>You will have {settings.time/1000} {settings.time/1000 > 1 ? "seconds" : "second"} to view the image before it disappears. Press the {settings.nsKey_string} key to mark it as <span style={{color: "blue"}}>asymmetric</span> or the {settings.sKey_string} key to mark it as <span style={{color: "blue"}}>symmetric</span>.
-                    <br/>Again, try to respond as quickly as possible <span style={{color: "red"}}>without sacrificing accuracy!</span><br/><br/>This step will repeat for all the images. Every several images, you will get a break.</p>
+                    <p style={{fontSize: "0.75em"}}>You will have {settings.time/1000} {settings.time/1000 == 1 ? "second" : "seconds"} to view the image before it disappears. Press the {settings.nsKey_string} key to mark it as <span style={{color: "blue"}}>asymmetric</span> or the {settings.sKey_string} key to mark it as <span style={{color: "blue"}}>symmetric</span>.
+                    <br/>Again, try to respond as quickly as possible <span style={{color: "red"}}>without sacrificing accuracy!</span><br/><br/>This step will repeat for all the images. Every several images, you will get a break.<br/><br/>Make sure to keep your gaze on the center of the screen.</p>
                 </h2>
                 <h2 style={{border: "1px solid blue"}}><span style={{color: "red"}}>Step Four:</span> Submit your HIT ID.<br/><p style={{fontSize: "0.75em"}}>You will be given a HIT ID to copy and paste back into MTURK for us to link your responses.</p></h2>
-                <h3>Ready to try it out before completing the full study?<br/>You will have to have greater than or equal to {settings.practice_required_acc * 100}% accuracy (standard human performance) to move on to the real experiment.</h3><br/>
-                <Link to="/practice_exp"><button style={{width: "33%", height: "100px"}}><p style={{fontSize: "5em", margin: 0, color: "green"}}>Practice!</p></button></Link>
+                <h3>Ready to try it out before completing the full study?<br/><br/>You will first have the chance to go through a shortened version of the study to make sure you feel comfortable with the presentation. <br/>You will not be evaluated on this part. 
+                <br/><br/>You will then go through another short portion where you will have to have greater than or equal to {settings.practice_required_acc * 100}% accuracy (standard human performance) to move on to the real, longer, experiment.</h3><br/>
+                <Link to="/practice_ne"><button style={{width: "33%", height: "100px"}}><p style={{fontSize: "5em", margin: 0, color: "green"}}>Practice!</p></button></Link>
             </div>
         )
     }
