@@ -1,4 +1,5 @@
 import React from 'react';
+import './styles/app.css';
 
 class Practice extends React.Component{
     constructor(props: any) {
@@ -7,7 +8,9 @@ class Practice extends React.Component{
 
     render() {
         return (
-            <div></div>
+            <div>
+                <h1></h1>
+            </div>
         )
     }
 }

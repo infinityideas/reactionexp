@@ -1,4 +1,10 @@
 import React from "react";
+import Break from "./components/exppages/Break";
+import Finished from "./components/exppages/Finished";
+import ImageShow from "./components/exppages/ImageShow";
+import Loading from "./components/exppages/Loading";
+import Waited from "./components/exppages/Waited";
+import Waiting from "./components/exppages/Waiting";
 import { settings } from "./scripts/config";
 
 const axios = require('axios');
@@ -84,6 +90,7 @@ class Exp extends React.Component<{}, ExpState> {
                         'x-api-key': settings.KORAPIKey
                     }
                 }).then((resp: any) => {
+                    document.removeEventListener("keydown", this.keyDown);
                     this.setState({
                         finished: true,
                         HITID: resp["data"]["id"]
@@ -170,63 +177,36 @@ class Exp extends React.Component<{}, ExpState> {
     render() {
         if (this.state.break) {
             return (
-                <div style={{textAlign: "center", fontFamily: "sans-serif"}}>
-                    <h1>Take a break!</h1>
-                    <h3>Get up, walk around, have some water and come back when you're ready.</h3><br/>
-                    <h3>Remember: you have one hour from when you started the task to finish it.</h3><br/>
-                    <h3><strong>DO NOT</strong> close this tab! You will lose your progress.</h3>
-                    <br/>
-                    <h3>Press <span style={{color: "red"}}>m</span> or <span style={{color: "red"}}>c</span> to keep going</h3>
-                </div>
+                <Break/>
             )
         }
         if (this.state.finished) {
             return (
-                <div style={{textAlign: "center", fontFamily: "sans-serif"}}>
-                    <h1>Thank you for completing the study!</h1>
-                    <h3>Please enter the following code into MTURK as your completion id: <span style={{color: "red"}}>{this.state.HITID}</span></h3>
-                    <br/><br/>
-                    <h4>Any questions? Please email psinha@mit.edu. You will need to send your completion id for us to assist with any issues.</h4>
-                </div>
+                <Finished HITID={this.state.HITID}/>
             )
         }
         if (!this.state.ready) {
             return (
-                <div style={{textAlign: "center", fontFamily: "sans-serif"}}>
-                    <h1>Loading the experiment...</h1>
-                </div>
+                <Loading/>
             )
         }
         if (this.state.waiting) {
-            if (this.state.started) {
-                return (
-                    <div></div>
-                )
-            } else {
-                return (
-                    <div style={{textAlign: "center", fontFamily: "sans-serif"}}><h1>Get ready</h1></div>
-                )
-            }
-            
+            return (
+                <Waiting started={this.state.started}/>
+            )
         }
         if (!this.state.waited) {
             return (
-                <div style={{textAlign: "center", fontFamily: "sans-serif"}}><h1>Press <span style={{color: "red"}}>m</span> or <span style={{color: "red"}}>c</span> to start</h1></div>
+                <Waited/>
             )
         }
         if (this.state.showingImage) {
             this.currentTime = Date.now()
             return (
-                <div style={{textAlign: "center", width: "100%", paddingTop: window.innerHeight/2-window.innerWidth/10}}>
-                    <img src={this.state.images[this.state.order[this.state.currentImage]]} width="100%" alt=""/>
-                </div>
+                <ImageShow src={this.state.images[this.state.order[this.state.currentImage]]}/>
             )
         }
-        return (
-            <div>
-
-            </div>
-        )
+        return (<div></div>)
     }
 }
 

@@ -14,6 +14,8 @@ function App() {
         press the <span style={{color: "red"}}>{settings.sKey_string}</span> key<br/>
         if it is <em style={{color: "blue"}}>not symmetric</em>, press the 
         <span style={{color: "red"}}> {settings.nsKey_string}</span> key<br/><br/>
+        <span style={{fontSize: "2em"}}>Remember!</span><br/> <span style={{color: "red"}}>{settings.sKey_string}</span> for <span style={{color: "blue"}}>symmetric</span> and<br/>
+        <span style={{color: "red"}}>{settings.nsKey_string}</span> for <span style={{color: "blue"}}>asymmetric</span><br/><br/>
         Try to respond as quickly as possible <strong style={{color: 'red'}}>without compromising accuracy</strong>, 
         although the computer will wait for you to answer before moving on to the next image.
         <br/>Place one finger from your left hand on the c key and one from your right hand on the m key.</h3><br/>
