@@ -5,7 +5,8 @@ export const settings = {
     nsKey: 65,
     sKey: 83,
     nsKey_string: "a",
-    sKey_string: "s"
+    sKey_string: "s",
+    practice_required_acc: 0.8
 }
 
 //flaskServer: "https://dariussinhan.korconnect.io/Symmetry-Exp/",

@@ -13,8 +13,9 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />}/>
-        <Route path="/exp" element={<Exp />}/>
+        <Route path="/exp" element={<Exp type="exp"/>}/>
         <Route path="/practice" element={<Practice />}/>
+        <Route path="/practice_exp" element={<Exp type="practice" />}/>
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

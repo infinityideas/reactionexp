@@ -6,6 +6,7 @@ import Loading from "./components/exppages/Loading";
 import Waited from "./components/exppages/Waited";
 import Waiting from "./components/exppages/Waiting";
 import { settings } from "./scripts/config";
+import get_accuracy from "./scripts/get_accuracy";
 
 const axios = require('axios');
 
@@ -24,10 +25,14 @@ interface ExpState {
     break: boolean,
 }
 
+interface ExpProps {
+    type: string
+}
+
 const nsKey: number = settings.nsKey;
 const sKey: number = settings.sKey;
 
-class Exp extends React.Component<{}, ExpState> {
+class Exp extends React.Component<ExpProps, ExpState> {
     private timeout: any
     private currentTime: number
 
@@ -83,7 +88,15 @@ class Exp extends React.Component<{}, ExpState> {
                 answer: e.keyCode === nsKey ? "NS" : "S"
             }
 
-            if (this.state.currentImage+1 === this.state.images.length) {
+            if ((this.state.currentImage+1 === this.state.images.length)) {
+                if (this.props.type == "practice") {
+                    this.setState({
+                        finished: true,
+                        HITID: "Your HIT ID would appear here!",
+                        toSubmit: currentSubmit
+                    })
+                    return;
+                }
                 axios.post(settings.flaskServer+"data", JSON.stringify(currentSubmit), {
                     headers: {
                         'content-type': 'application/json',
@@ -125,7 +138,7 @@ class Exp extends React.Component<{}, ExpState> {
     componentDidMount() {
         axios.get(settings.flaskServer+"getimages_order", {
             params: {
-                type: 'exp'
+                type: this.props.type
             },
             headers: {
                 'x-api-key': settings.KORAPIKey
@@ -181,9 +194,21 @@ class Exp extends React.Component<{}, ExpState> {
             )
         }
         if (this.state.finished) {
-            return (
-                <Finished HITID={this.state.HITID}/>
-            )
+            if (this.props.type=="practice") {
+                if (get_accuracy(this.state.toSubmit, this.state.images.length) >= settings.practice_required_acc) {
+                    return (
+                        <Finished HITID={this.state.HITID} type="practice-pass"/>
+                    )
+                } else {
+                    return (
+                        <Finished HITID={this.state.HITID} type="practice-fail"/>
+                    )
+                }
+            } else {
+                return (
+                    <Finished HITID={this.state.HITID} type="exp"/>
+                )
+            }
         }
         if (!this.state.ready) {
             return (
