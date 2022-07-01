@@ -117,6 +117,9 @@ class Exp extends React.Component<{}, ExpState> {
 
     componentDidMount() {
         axios.get(settings.flaskServer+"getimages_order", {
+            params: {
+                type: 'exp'
+            },
             headers: {
                 'x-api-key': settings.KORAPIKey
             }
