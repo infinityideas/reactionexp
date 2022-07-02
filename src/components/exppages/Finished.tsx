@@ -44,7 +44,7 @@ function Finished(props: FinishedProps) {
                 {basicTemplate}
                 <p><span style={{color: "red"}}>This was a practice round.</span> You had a {props.accuracy * 100}% accuracy.<br/>You can now take the test to see if you can move on to the real experiment, but remember: you will need greater than or equal to {settings.practice_required_acc * 100}% accuracy to pass.<br/>You can also repeat this practice round to get more comfortable.</p>
                 <button onClick={() => {window.location.reload()}}>Repeat practice round</button>
-                <a href="/practice_exp"><button>Take the test</button></a>
+                <a href="/practice_exp"><button>Take the qualification test</button></a>
             </div>
         )
     } else {
