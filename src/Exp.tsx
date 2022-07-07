@@ -89,8 +89,6 @@ class Exp extends React.Component<ExpProps, ExpState> {
                 hit: this.state.HITID
             }
 
-            console.log(currentSubmit);
-
             if ((this.state.currentImage+1 === this.state.images.length)) {
                 if (this.props.type == "practice" || this.props.type == "ne") {
                     this.setState({
