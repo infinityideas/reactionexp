@@ -1,3 +1,6 @@
+import crossImage from '../../content/images/blank.png';
+import ImageShow from './ImageShow';
+
 interface WaitingProps {
     started: boolean
 }
@@ -5,7 +8,7 @@ interface WaitingProps {
 function Waiting(props: WaitingProps) {
     if (props.started) {
         return (
-            <div></div>
+            <ImageShow src={crossImage} />
         )
     } else {
         return (
