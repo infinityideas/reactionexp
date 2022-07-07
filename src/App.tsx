@@ -1,13 +1,19 @@
 import './styles/app.css';
 import { settings } from './scripts/config';
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import example from './content/images/PictureEx.png';
 
 function App() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  if (searchParams.get("PROLIFIC_PID") != null) {
+    window.localStorage.setItem('SYMM_PROLIFIC_PID', searchParams.get("PROLIFIC_PID") as string)
+  }
+
   return (
     <div className="container">
       <h1>Welcome to the Symmetry Reaction Time Experiment</h1>
-      <h3>We appreciate you taking the time to complete this study.</h3><h3>We expect this task will take around 10 minutes.</h3><h4>Please sit around 50cm from the screen.</h4><br/>
+      <h3>We appreciate you taking the time to complete this study.</h3><h3>We expect this task will take around 15 minutes.</h3><h4>Please sit around 50cm from the screen.</h4><br/>
       <h3>You will be presented with a series of images. Each image will be displayed for {settings.time/1000} {settings.time/1000 == 1 ? "second" : "seconds"}. <br/><span style={{fontSize: "2em"}}>Keep your gaze on the cross in the middle of the image.</span></h3><br/>
       <h3>When an image appears on the screen, 
         <br/><br/>if it is <em style={{color: "blue"}}>symmetric</em>, 

@@ -85,14 +85,15 @@ class Exp extends React.Component<ExpProps, ExpState> {
                 time: timeTaken,
                 imageNumber: this.state.order[this.state.currentImage],
                 imageURL: this.state.images[this.state.order[this.state.currentImage]],
-                answer: e.keyCode === nsKey ? "NS" : "S"
+                answer: e.keyCode === nsKey ? "NS" : "S",
+                hit: this.state.HITID
             }
 
             if ((this.state.currentImage+1 === this.state.images.length)) {
                 if (this.props.type == "practice" || this.props.type == "ne") {
                     this.setState({
                         finished: true,
-                        HITID: "Your HIT ID would appear here!",
+                        HITID: "Your completion code would appear here!",
                         toSubmit: currentSubmit
                     })
                     return;
@@ -128,7 +129,7 @@ class Exp extends React.Component<ExpProps, ExpState> {
                     waiting: false,
                     showingImage: true,
                     currentImage: this.state.currentImage+1,
-                    toSubmit: currentSubmit
+                    toSubmit: currentSubmit,
                 })
             }, settings.waittime)
             
@@ -154,7 +155,8 @@ class Exp extends React.Component<ExpProps, ExpState> {
                 order: response["data"]["order"],
                 images: response["data"]["links"],
                 ready: true,
-                showingImage: true
+                showingImage: true,
+                HITID: window.localStorage.getItem("SYMM_PROLIFIC_PID") == null ? "" : (window.localStorage.getItem("SYMM_PROLIFIC_PID") as string)
             })
         });
     }
