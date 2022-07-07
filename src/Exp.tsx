@@ -234,8 +234,11 @@ class Exp extends React.Component<ExpProps, ExpState> {
             return (
                 <ImageShow src={this.state.images[this.state.order[this.state.currentImage]]}/>
             )
+        } else {
+            return (
+                <Waiting started={this.state.started}/>
+            )
         }
-        return (<div></div>)
     }
 }
 
