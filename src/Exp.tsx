@@ -101,7 +101,7 @@ class Exp extends React.Component<ExpProps, ExpState> {
                 axios.post(settings.flaskServer+"data", JSON.stringify(currentSubmit), {
                     headers: {
                         'content-type': 'application/json',
-                        'x-api-key': settings.KORAPIKey
+                        'x-infiniteapi-key': settings.KORAPIKey
                     }
                 }).then((resp: any) => {
                     document.removeEventListener("keydown", this.keyDown);
@@ -142,7 +142,7 @@ class Exp extends React.Component<ExpProps, ExpState> {
                 type: this.props.type
             },
             headers: {
-                'x-api-key': settings.KORAPIKey
+                'x-infiniteapi-key': settings.KORAPIKey
             }
         }).then((response: any) => {
             response["data"]["links"].forEach((picture: string) => {
