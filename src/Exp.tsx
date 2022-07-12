@@ -113,9 +113,15 @@ class Exp extends React.Component<ExpProps, ExpState> {
                 return;
             } else if ((this.state.currentImage % 50 == 0) && this.state.currentImage != 0) {
                 this.setState({
-                    break: true,
-                    toSubmit: currentSubmit
+                    waiting: true
                 });
+                setTimeout(() => {
+                    this.setState({
+                        break: true,
+                        waiting: false,
+                        toSubmit: currentSubmit
+                    });
+                }, settings.waittime);
                 return;
             }
             if (this.timeout !== -99) {
