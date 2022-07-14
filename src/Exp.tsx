@@ -1,5 +1,13 @@
 import React from "react";
+import Break from "./components/exppages/Break";
+import Finished from "./components/exppages/Finished";
+import ImageShow from "./components/exppages/ImageShow";
+import Loading from "./components/exppages/Loading";
+import Waited from "./components/exppages/Waited";
+import Waiting from "./components/exppages/Waiting";
 import { settings } from "./scripts/config";
+import get_accuracy from "./scripts/get_accuracy";
+import { getRndInteger } from "./scripts/randomInt";
 
 const axios = require('axios');
 
@@ -18,9 +26,17 @@ interface ExpState {
     break: boolean,
 }
 
-class Exp extends React.Component<{}, ExpState> {
+interface ExpProps {
+    type: string
+}
+
+const nsKey: number = settings.nsKey;
+const sKey: number = settings.sKey;
+
+class Exp extends React.Component<ExpProps, ExpState> {
     private timeout: any
     private currentTime: number
+    private expref: any
 
     constructor(props: any) {
         super(props);
@@ -43,11 +59,14 @@ class Exp extends React.Component<{}, ExpState> {
         this.currentTime = -99;
         this.keyDown = this.keyDown.bind(this);
         this.afterBreak = this.afterBreak.bind(this);
+        this.getCurrent = this.getCurrent.bind(this);
+        this.expref = React.createRef();
     }
 
     keyDown(e: any) {
         const timeTaken = Date.now()-this.currentTime;
-        if ((e.keyCode === 67 || e.keyCode === 77) && !this.state.waited) {
+        if ((e.keyCode === nsKey || e.keyCode === sKey) && !this.state.waited) {
+            this.expref.current.webkitRequestFullscreen();
             this.setState({
                 waiting: true
             })
@@ -57,41 +76,66 @@ class Exp extends React.Component<{}, ExpState> {
                     waiting: false,
                     started: true
                 })
-            }, 3000);
+            }, 5000);
             return
         }
 
-        if (((e.keyCode === 67) || (e.keyCode === 77)) && this.state.break) {
+        if (((e.keyCode === nsKey) || (e.keyCode === sKey)) && this.state.break) {
             this.afterBreak();
         }
 
-        if (((e.keyCode === 67) || (e.keyCode === 77)) && !this.state.waiting && this.state.waited && !this.state.break) {
+        if (((e.keyCode === nsKey) || (e.keyCode === sKey)) && !this.state.waiting && this.state.waited && !this.state.break) {
             let currentSubmit: any = this.state.toSubmit;
             currentSubmit[this.state.currentImage.toString()] = {
                 time: timeTaken,
                 imageNumber: this.state.order[this.state.currentImage],
                 imageURL: this.state.images[this.state.order[this.state.currentImage]],
-                answer: e.keyCode === 67 ? "NS" : "S"
+                answer: e.keyCode === nsKey ? "NS" : "S",
+                hit: this.state.HITID,
+                screenSize: ((window.innerWidth).toString())+"x"+((window.innerHeight).toString())
             }
 
-            if (this.state.currentImage+1 === this.state.images.length) {
+            if ((this.state.currentImage+1 === this.state.images.length)) {
+                if (this.props.type == "practice" || this.props.type == "ne") {
+                    document.removeEventListener("keydown", this.keyDown);
+                    document.exitFullscreen();
+                    setTimeout(() => {
+                        this.setState({
+                            finished: true,
+                            HITID: "Your completion code would appear here!",
+                            toSubmit: currentSubmit
+                        })
+                    }, getRndInteger(settings.waitmin, settings.waitmax))
+                    return;
+                }
                 axios.post(settings.flaskServer+"data", JSON.stringify(currentSubmit), {
                     headers: {
                         'content-type': 'application/json',
-                        'x-api-key': settings.KORAPIKey
+                        'x-infiniteapi-key': settings.KORAPIKey
                     }
                 }).then((resp: any) => {
-                    this.setState({
-                        finished: true,
-                        HITID: resp["data"]["id"]
-                    })
+                    document.removeEventListener("keydown", this.keyDown);
+                    document.exitFullscreen();
+                    window.localStorage.removeItem("SYMM_PROLIFIC_PID");
+                    setTimeout(() => {
+                        this.setState({
+                            finished: true,
+                            HITID: resp["data"]["id"]
+                        });
+                    }, getRndInteger(1000, 1500));
                 })
                 return;
             } else if ((this.state.currentImage % 50 == 0) && this.state.currentImage != 0) {
                 this.setState({
-                    break: true,
-                    toSubmit: currentSubmit
+                    waiting: true
                 });
+                setTimeout(() => {
+                    this.setState({
+                        break: true,
+                        waiting: false,
+                        toSubmit: currentSubmit
+                    });
+                }, settings.waittime);
                 return;
             }
             if (this.timeout !== -99) {
@@ -105,17 +149,20 @@ class Exp extends React.Component<{}, ExpState> {
                     waiting: false,
                     showingImage: true,
                     currentImage: this.state.currentImage+1,
-                    toSubmit: currentSubmit
+                    toSubmit: currentSubmit,
                 })
-            }, 1000)
+            }, getRndInteger(settings.waitmin, settings.waitmax))
             
         }
     }
 
     componentDidMount() {
         axios.get(settings.flaskServer+"getimages_order", {
+            params: {
+                type: this.props.type
+            },
             headers: {
-                'x-api-key': settings.KORAPIKey
+                'x-infiniteapi-key': settings.KORAPIKey
             }
         }).then((response: any) => {
             response["data"]["links"].forEach((picture: string) => {
@@ -128,7 +175,8 @@ class Exp extends React.Component<{}, ExpState> {
                 order: response["data"]["order"],
                 images: response["data"]["links"],
                 ready: true,
-                showingImage: true
+                showingImage: true,
+                HITID: window.localStorage.getItem("SYMM_PROLIFIC_PID") == null ? "" : (window.localStorage.getItem("SYMM_PROLIFIC_PID") as string)
             })
         });
     }
@@ -139,7 +187,7 @@ class Exp extends React.Component<{}, ExpState> {
                 this.setState({
                     showingImage: false
                 })
-            }, 1000)
+            }, settings.time)
             
         }
     }
@@ -158,67 +206,67 @@ class Exp extends React.Component<{}, ExpState> {
                 showingImage: true,
                 currentImage: this.state.currentImage+1,
             })
-        }, 1000)
+        }, getRndInteger(settings.waitmin, settings.waitmax))
     }
 
-    render() {
+    getCurrent() {
         if (this.state.break) {
             return (
-                <div style={{textAlign: "center", fontFamily: "sans-serif"}}>
-                    <h1>Take a break!</h1>
-                    <h3>Get up, walk around, have some water and come back when you're ready.</h3><br/>
-                    <h3>Remember: you have one hour from when you started the task to finish it.</h3><br/>
-                    <h3><strong>DO NOT</strong> close this tab! You will lose your progress.</h3>
-                    <br/>
-                    <h3>Press <span style={{color: "red"}}>m</span> or <span style={{color: "red"}}>c</span> to keep going</h3>
-                </div>
+                <Break/>
             )
         }
         if (this.state.finished) {
-            return (
-                <div style={{textAlign: "center", fontFamily: "sans-serif"}}>
-                    <h1>Thank you for completing the study!</h1>
-                    <h3>Please enter the following code into MTURK as your completion id: <span style={{color: "red"}}>{this.state.HITID}</span></h3>
-                    <br/><br/>
-                    <h4>Any questions? Please email psinha@mit.edu. You will need to send your completion id for us to assist with any issues.</h4>
-                </div>
-            )
+            if (this.props.type=="practice") {
+                if (get_accuracy(this.state.toSubmit, this.state.images.length) >= settings.practice_required_acc) {
+                    return (
+                        <Finished HITID={this.state.HITID} type="practice-pass" accuracy={get_accuracy(this.state.toSubmit, this.state.images.length)}/>
+                    )
+                } else {
+                    return (
+                        <Finished HITID={this.state.HITID} type="practice-fail" accuracy={get_accuracy(this.state.toSubmit, this.state.images.length)}/>
+                    )
+                }
+            } else if (this.props.type=="exp") {
+                return (
+                    <Finished HITID={this.state.HITID} type="exp" accuracy={0}/>
+                )
+            } else if (this.props.type == "ne") {
+                return (
+                    <Finished HITID={this.state.HITID} type="ne" accuracy={get_accuracy(this.state.toSubmit, this.state.images.length)}/>
+                )
+            }
         }
         if (!this.state.ready) {
             return (
-                <div style={{textAlign: "center", fontFamily: "sans-serif"}}>
-                    <h1>Loading the experiment...</h1>
-                </div>
+                <Loading/>
             )
         }
         if (this.state.waiting) {
-            if (this.state.started) {
-                return (
-                    <div></div>
-                )
-            } else {
-                return (
-                    <div style={{textAlign: "center", fontFamily: "sans-serif"}}><h1>Get ready</h1></div>
-                )
-            }
-            
+            return (
+                <Waiting started={this.state.started}/>
+            )
         }
         if (!this.state.waited) {
             return (
-                <div style={{textAlign: "center", fontFamily: "sans-serif"}}><h1>Press <span style={{color: "red"}}>m</span> or <span style={{color: "red"}}>c</span> to start</h1></div>
+                <Waited/>
             )
         }
         if (this.state.showingImage) {
             this.currentTime = Date.now()
             return (
-                <div style={{textAlign: "center", width: "100%", paddingTop: window.innerHeight/2-window.innerWidth/10}}>
-                    <img src={this.state.images[this.state.order[this.state.currentImage]]} width="100%" alt=""/>
-                </div>
+                <ImageShow src={this.state.images[this.state.order[this.state.currentImage]]}/>
+            )
+        } else {
+            return (
+                <Waiting started={this.state.started}/>
             )
         }
-        return (
-            <div>
+    }
 
+    render() {
+        return (
+            <div ref={this.expref} style={{height: "100%", backgroundColor: "white"}}>
+                {this.getCurrent()}
             </div>
         )
     }
