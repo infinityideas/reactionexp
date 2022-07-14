@@ -7,6 +7,7 @@ import Waited from "./components/exppages/Waited";
 import Waiting from "./components/exppages/Waiting";
 import { settings } from "./scripts/config";
 import get_accuracy from "./scripts/get_accuracy";
+import { getRndInteger } from "./scripts/randomInt";
 
 const axios = require('axios');
 
@@ -35,6 +36,7 @@ const sKey: number = settings.sKey;
 class Exp extends React.Component<ExpProps, ExpState> {
     private timeout: any
     private currentTime: number
+    private expref: any
 
     constructor(props: any) {
         super(props);
@@ -57,11 +59,14 @@ class Exp extends React.Component<ExpProps, ExpState> {
         this.currentTime = -99;
         this.keyDown = this.keyDown.bind(this);
         this.afterBreak = this.afterBreak.bind(this);
+        this.getCurrent = this.getCurrent.bind(this);
+        this.expref = React.createRef();
     }
 
     keyDown(e: any) {
         const timeTaken = Date.now()-this.currentTime;
         if ((e.keyCode === nsKey || e.keyCode === sKey) && !this.state.waited) {
+            this.expref.current.webkitRequestFullscreen();
             this.setState({
                 waiting: true
             })
@@ -71,7 +76,7 @@ class Exp extends React.Component<ExpProps, ExpState> {
                     waiting: false,
                     started: true
                 })
-            }, 3000);
+            }, 5000);
             return
         }
 
@@ -86,16 +91,21 @@ class Exp extends React.Component<ExpProps, ExpState> {
                 imageNumber: this.state.order[this.state.currentImage],
                 imageURL: this.state.images[this.state.order[this.state.currentImage]],
                 answer: e.keyCode === nsKey ? "NS" : "S",
-                hit: this.state.HITID
+                hit: this.state.HITID,
+                screenSize: ((window.innerWidth).toString())+"x"+((window.innerHeight).toString())
             }
 
             if ((this.state.currentImage+1 === this.state.images.length)) {
                 if (this.props.type == "practice" || this.props.type == "ne") {
-                    this.setState({
-                        finished: true,
-                        HITID: "Your completion code would appear here!",
-                        toSubmit: currentSubmit
-                    })
+                    document.removeEventListener("keydown", this.keyDown);
+                    document.exitFullscreen();
+                    setTimeout(() => {
+                        this.setState({
+                            finished: true,
+                            HITID: "Your completion code would appear here!",
+                            toSubmit: currentSubmit
+                        })
+                    }, getRndInteger(settings.waitmin, settings.waitmax))
                     return;
                 }
                 axios.post(settings.flaskServer+"data", JSON.stringify(currentSubmit), {
@@ -105,10 +115,14 @@ class Exp extends React.Component<ExpProps, ExpState> {
                     }
                 }).then((resp: any) => {
                     document.removeEventListener("keydown", this.keyDown);
-                    this.setState({
-                        finished: true,
-                        HITID: resp["data"]["id"]
-                    })
+                    document.exitFullscreen();
+                    window.localStorage.removeItem("SYMM_PROLIFIC_PID");
+                    setTimeout(() => {
+                        this.setState({
+                            finished: true,
+                            HITID: resp["data"]["id"]
+                        });
+                    }, getRndInteger(1000, 1500));
                 })
                 return;
             } else if ((this.state.currentImage % 50 == 0) && this.state.currentImage != 0) {
@@ -137,7 +151,7 @@ class Exp extends React.Component<ExpProps, ExpState> {
                     currentImage: this.state.currentImage+1,
                     toSubmit: currentSubmit,
                 })
-            }, settings.waittime)
+            }, getRndInteger(settings.waitmin, settings.waitmax))
             
         }
     }
@@ -192,10 +206,10 @@ class Exp extends React.Component<ExpProps, ExpState> {
                 showingImage: true,
                 currentImage: this.state.currentImage+1,
             })
-        }, settings.waittime)
+        }, getRndInteger(settings.waitmin, settings.waitmax))
     }
 
-    render() {
+    getCurrent() {
         if (this.state.break) {
             return (
                 <Break/>
@@ -247,6 +261,14 @@ class Exp extends React.Component<ExpProps, ExpState> {
                 <Waiting started={this.state.started}/>
             )
         }
+    }
+
+    render() {
+        return (
+            <div ref={this.expref} style={{height: "100%", backgroundColor: "white"}}>
+                {this.getCurrent()}
+            </div>
+        )
     }
 }
 

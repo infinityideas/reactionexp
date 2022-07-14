@@ -14,28 +14,24 @@ class Practice extends React.Component{
 
     render() {
         return (
-            <div className="container">
-                <h1>Instructions!</h1>
-                <h3>How this will work:</h3>
-                <h3 style={{color: "red"}}>These are the same steps you will take on the real study.</h3>
-                <hr/>
-                <h2 style={{border: "1px solid blue"}}><span style={{color: "red"}}>Step Zero:</span> We will load the experimental files</h2>
-                <h2 style={{border: "1px solid blue", paddingBottom: "10px"}}><span style={{color: "red"}}>Step One:</span> Press either the {settings.nsKey_string} or the {settings.sKey_string} key to start.
-                    <br/><img src={Step1} width="50%" style={{boxShadow: "10px 10px 10px lightblue"}}/>
-                </h2>
-                <h2 style={{border: "1px solid blue", paddingBottom: "10px"}}><span style={{color: "red"}}>Step Two:</span> Get ready!
-                    <br/><img src={Step2} width="50%" style={{boxShadow: "10px 10px 10px lightblue"}}/>
-                    <p style={{fontSize: "0.75em"}}>You will have three seconds to get your fingers in position on the {settings.nsKey_string} and {settings.sKey_string} keys.</p>
-                </h2>
-                <h2 style={{border: "1px solid blue", paddingBottom: "10px"}}><span style={{color: "red"}}>Step Three:</span> Classify the image.
-                    <br/><img src={Step3} width="50%" style={{boxShadow: "10px 10px 10px lightblue"}}/>
-                    <p style={{fontSize: "0.75em"}}>You will have {settings.time/1000} {settings.time/1000 == 1 ? "second" : "seconds"} to view the image before it disappears. Press the {settings.nsKey_string} key to mark it as <span style={{color: "blue"}}>asymmetric</span> or the {settings.sKey_string} key to mark it as <span style={{color: "blue"}}>symmetric</span>.
-                    <br/>Again, try to respond as quickly as possible <span style={{color: "red"}}>without sacrificing accuracy!</span><br/><br/>This step will repeat for all the images. Every several images, you will get a break.<br/><br/>Make sure to keep your gaze on the center of the screen.</p>
-                </h2>
-                <h2 style={{border: "1px solid blue"}}><span style={{color: "red"}}>Step Four:</span> Submit your completion ID.<br/><p style={{fontSize: "0.75em"}}>You will be given a completion ID to copy and paste back into MTURK/Prolific for us to link your responses.</p></h2>
-                <h3>Ready to try it out before completing the full study?<br/><br/>You will first have the chance to go through a shortened version of the study to make sure you feel comfortable with the presentation. <br/>You will not be evaluated on this part. 
-                <br/><br/>You will then go through another short portion where you will have to have greater than or equal to {settings.practice_required_acc * 100}% accuracy (standard human performance) to move on to the real, longer, experiment.</h3><br/>
-                <Link to="/practice_ne"><button style={{width: "33%", height: "100px"}}><p style={{fontSize: "5em", margin: 0, color: "green"}}>Practice!</p></button></Link>
+            <div className="container" style={{fontFamily: "arial"}}>
+                <div style={{width: "80%", paddingLeft: "10%"}}>
+                    <ul style={{fontSize: "1.25em", textAlign: "left"}}>
+                        <li>
+                            You will now have the chance to familiarize yourself with the study in a 2-3 minute practice session. You will not be evaluated on this part.
+                        </li><br/>
+                        <li>
+                            This will be followed by another short session (lasting 1-2 minutes) in which you will need to achieve at least {settings.practice_required_acc * 100}% accuracy to be able to move on to the full paid study.
+                        </li><br/>
+                        <li>
+                            The full study will last around 15 minutes. You will be able to take breaks at three designated points during the study.
+                        </li><br/>
+                        <li>
+                            After you have finished the full study, you will be shown a <em>completion ID</em> to copy and paste back into MTurk/Prolific for us to link your responses.
+                        </li>
+                    </ul><br/>
+                    <Link to="/practice_ne"><button style={{fontSize: "1.5em"}}>Start Practice Session ➡️</button></Link>
+                </div>
             </div>
         )
     }
