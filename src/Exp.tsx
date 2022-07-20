@@ -130,10 +130,13 @@ class Exp extends React.Component<ExpProps, ExpState> {
                         window.localStorage.removeItem("SYMM_PROLIFIC_PID");
                     }
                     if (this.props.type == "baseline1") {
-                        window.location.replace("/baseline2");
+                        if (window.localStorage.getItem("SYMM_PROLIFIC_PID") == null) {
+                            window.localStorage.setItem("SYMM_BASELINE_HITID", resp["data"]["id"]);
+                        }
+                        window.location.replace("/baseline/screen2");
                         return;
                     } else if (this.props.type == "baseline2") {
-                        window.location.replace("/baseline3");
+                        window.location.replace("/baseline/screen3");
                         return;
                     }
                     setTimeout(() => {
@@ -190,12 +193,22 @@ class Exp extends React.Component<ExpProps, ExpState> {
 
             document.addEventListener("keydown", this.keyDown);
 
+            let HITID = "";
+
+            if (window.localStorage.getItem("SYMM_PROLIFIC_PID") == null) {
+                if (window.localStorage.getItem("SYMM_BASELINE_HITID") != null) {
+                    HITID = (window.localStorage.getItem("SYMM_BASELINE_HITID") as string)
+                }
+            } else {
+                HITID = (window.localStorage.getItem("SYMM_PROLIFIC_PID") as string)
+            }
+
             this.setState({
                 order: response["data"]["order"],
                 images: response["data"]["links"],
                 ready: true,
                 showingImage: true,
-                HITID: window.localStorage.getItem("SYMM_PROLIFIC_PID") == null ? "" : (window.localStorage.getItem("SYMM_PROLIFIC_PID") as string)
+                HITID: HITID
             })
         });
     }
