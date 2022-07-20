@@ -3,6 +3,8 @@ import { settings } from './scripts/config';
 import { Link, useSearchParams } from "react-router-dom";
 import example from './content/images/PictureEx.png';
 import { useState } from 'react';
+import prolific_setup from './scripts/prolific_setup';
+import WelcomeScreen from './components/instructions/WelcomeScreen';
 
 import symm1 from './content/images/Symm1.png';
 import symm2 from './content/images/Symm2.png';
@@ -13,19 +15,15 @@ function App() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentStep, setCurrentStep] = useState(0);
 
-  window.localStorage.removeItem("SYMM_PROLIFIC_PID");
+  prolific_setup(searchParams);
 
-  if (searchParams.get("PROLIFIC_PID") != null) {
-    window.localStorage.setItem('SYMM_PROLIFIC_PID', searchParams.get("PROLIFIC_PID") as string)
+  const newCurrent = (newCurrentStep: any) => {
+    setCurrentStep(newCurrentStep);
   }
 
   if (currentStep == 0) {
     return (
-      <div className="container" style={{fontFamily: "arial"}}>
-        <h1><span style={{fontSize: "0.75em"}}>Welcome to the</span><br/><span style={{color: "darkblue"}}>Symmetry Perception Study</span></h1>
-        <br/><br/><h3 style={{fontWeight: "normal"}}>We appreciate your participation.</h3><br/><h3 style={{fontWeight: "normal"}}>This study will take roughly 20 minutes.</h3><h3 style={{fontWeight: "normal"}}>Please sit approximately 50cm from the screen.<br/>Please make sure that your screen's brightness is turned up.</h3><br/>
-        <button style={{fontSize: "1.5em"}} onClick={() => {setCurrentStep(currentStep+1)}}>Next ➡️</button>
-      </div>
+      <WelcomeScreen headerText="Symmetry Perception Study" currentStep={currentStep} setCurrentStep={newCurrent} numParts=""/>
     );
   } else if (currentStep == 1) {
     return (

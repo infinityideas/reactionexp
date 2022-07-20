@@ -65,7 +65,7 @@ class Exp extends React.Component<ExpProps, ExpState> {
 
     keyDown(e: any) {
         const timeTaken = Date.now()-this.currentTime;
-        if ((e.keyCode === nsKey || e.keyCode === sKey) && !this.state.waited) {
+        if (((((e.keyCode === nsKey) || (e.keyCode === sKey)) && this.props.type != "baseline1") || ((e.keyCode === settings.baseline1key) && this.props.type == "baseline1"))&& !this.state.waited) {
             this.expref.current.webkitRequestFullscreen();
             this.setState({
                 waiting: true
@@ -80,17 +80,27 @@ class Exp extends React.Component<ExpProps, ExpState> {
             return
         }
 
-        if (((e.keyCode === nsKey) || (e.keyCode === sKey)) && this.state.break) {
+        if (((((e.keyCode === nsKey) || (e.keyCode === sKey)) && this.props.type != "baseline1") || ((e.keyCode === settings.baseline1key) && this.props.type == "baseline1")) && this.state.break) {
             this.afterBreak();
         }
 
-        if (((e.keyCode === nsKey) || (e.keyCode === sKey)) && !this.state.waiting && this.state.waited && !this.state.break) {
+        if (((((e.keyCode === nsKey) || (e.keyCode === sKey)) && this.props.type != "baseline1") || ((e.keyCode === settings.baseline1key) && this.props.type == "baseline1")) && !this.state.waiting && this.state.waited && !this.state.break) {
             let currentSubmit: any = this.state.toSubmit;
+            let currentAnswer = "";
+
+            if (e.keyCode === nsKey) {
+                currentAnswer = "NS";
+            } else if (e.keyCode === sKey) {
+                currentAnswer = "S";
+            } else if (e.keyCode === settings.baseline1key) {
+                currentAnswer = "NA";
+            }
             currentSubmit[this.state.currentImage.toString()] = {
                 time: timeTaken,
+                type: this.props.type,
                 imageNumber: this.state.order[this.state.currentImage],
                 imageURL: this.state.images[this.state.order[this.state.currentImage]],
-                answer: e.keyCode === nsKey ? "NS" : "S",
+                answer: currentAnswer,
                 hit: this.state.HITID,
                 screenSize: ((window.innerWidth).toString())+"x"+((window.innerHeight).toString())
             }
@@ -116,7 +126,16 @@ class Exp extends React.Component<ExpProps, ExpState> {
                 }).then((resp: any) => {
                     document.removeEventListener("keydown", this.keyDown);
                     document.exitFullscreen();
-                    window.localStorage.removeItem("SYMM_PROLIFIC_PID");
+                    if ((this.props.type != "baseline1") && (this.props.type != "baseline2")) {
+                        window.localStorage.removeItem("SYMM_PROLIFIC_PID");
+                    }
+                    if (this.props.type == "baseline1") {
+                        window.location.replace("/baseline2");
+                        return;
+                    } else if (this.props.type == "baseline2") {
+                        window.location.replace("/baseline3");
+                        return;
+                    }
                     setTimeout(() => {
                         this.setState({
                             finished: true,
@@ -212,7 +231,7 @@ class Exp extends React.Component<ExpProps, ExpState> {
     getCurrent() {
         if (this.state.break) {
             return (
-                <Break/>
+                <Break type={this.props.type}/>
             )
         }
         if (this.state.finished) {
@@ -248,7 +267,7 @@ class Exp extends React.Component<ExpProps, ExpState> {
         }
         if (!this.state.waited) {
             return (
-                <Waited/>
+                <Waited type={this.props.type}/>
             )
         }
         if (this.state.showingImage) {

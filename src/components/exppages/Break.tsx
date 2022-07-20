@@ -1,6 +1,16 @@
 import { settings } from "../../scripts/config";
 
-function Break() {
+interface BreakProps {
+    type: string
+}
+
+function Break(props: BreakProps) {
+    let continueButton = <div></div>;
+    if (props.type == "baseline1") {
+        continueButton = <span style={{color: "red"}}>{settings.baseline1key_string}</span>
+    } else {
+        continueButton = <div><span style={{color: "red"}}>{settings.nsKey_string}</span> or <span style={{color: "red"}}>{settings.sKey_string}</span></div>
+    }
     return (
         <div style={{textAlign: "center", fontFamily: "sans-serif"}}>
             <h1>Take a break!</h1>
@@ -8,7 +18,7 @@ function Break() {
             <h3>Remember: you have one hour from when you started the task to finish it.</h3><br/>
             <h3><strong>DO NOT</strong> close this tab! You will lose your progress.</h3>
             <br/>
-            <h3>Press <span style={{color: "red"}}>{settings.nsKey_string}</span> or <span style={{color: "red"}}>{settings.sKey_string}</span> to keep going</h3>
+            <h3>Press {continueButton} to keep going</h3>
         </div>
     )
 }

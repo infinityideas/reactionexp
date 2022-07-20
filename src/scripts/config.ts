@@ -1,6 +1,6 @@
 export const settings = {
     time: 300,
-    flaskServer: "https://symmetryflask.herokuapp.com/",
+    flaskServer: "http://10.0.0.218:5001/",
     KORAPIKey: "4f489fad-85bf-406b-bc17-47138a495508",
     nsKey: 65,
     sKey: 83,
@@ -9,5 +9,10 @@ export const settings = {
     practice_required_acc: 0.75,
     waittime: 1000,
     waitmin: 1000,
-    waitmax: 1500
+    waitmax: 1500,
+
+    baseline1key: 32,
+    baseline1key_string: "space bar"
 }
+
+//flaskServer: "https://symmetryflask.herokuapp.com/",
