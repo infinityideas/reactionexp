@@ -24,7 +24,7 @@ function BaselineIndex(props: any) {
                 <h1 style={{color: "rgb(176, 35, 24)", paddingTop: "20px"}}>STUDY 1</h1>
                 <h3 style={{fontWeight: "normal"}}>You will be presented with a series of images.</h3><br/>
                 <h3 style={{fontWeight: "normal"}}>Keep your gaze on the red cross in the middle of the screen.</h3><br/><br/>
-                <h3 style={{fontWeight: "normal"}}>You have to press the space-bar as soon as possible when an image appears.</h3>
+                <h3 style={{fontWeight: "normal"}}>You have to press the space-bar <strong><em>as soon as possible</em></strong> when an image appears.</h3>
                 <h3 style={{fontWeight: "normal"}}>We are measuring how fast you respond to visual stimuli.</h3><br/><br/>
                 <h3 style={{fontWeight: "normal"}}>The computer will wait for you to respond before displaying the next image.</h3><br/>
                 <Link to="st1"><button style={{fontSize: "1.5em"}}>Next ➡️</button></Link>

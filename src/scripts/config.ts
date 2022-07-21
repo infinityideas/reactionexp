@@ -12,7 +12,9 @@ export const settings = {
     waitmax: 1500,
 
     baseline1key: 32,
-    baseline1key_string: "space bar"
+    baseline1key_string: "space bar",
+    baselineImageShow: 300,
+    baselineImageBetween: 300
 }
 
 //flaskServer: "https://symmetryflask.herokuapp.com/",
