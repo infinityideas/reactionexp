@@ -8,8 +8,10 @@ function Break(props: BreakProps) {
     let continueButton = <div></div>;
     if (props.type == "baseline1") {
         continueButton = <span style={{color: "red"}}>{settings.baseline1key_string}</span>
+    } else if (props.type == "baseline3") {
+        continueButton = <span><span style={{color: "red"}}>s</span> or <span style={{color: "red"}}>d</span></span>
     } else {
-        continueButton = <div><span style={{color: "red"}}>{settings.nsKey_string}</span> or <span style={{color: "red"}}>{settings.sKey_string}</span></div>
+        continueButton = <span><span style={{color: "red"}}>{settings.nsKey_string}</span> or <span style={{color: "red"}}>{settings.sKey_string}</span></span>
     }
     return (
         <div style={{textAlign: "center", fontFamily: "sans-serif"}}>

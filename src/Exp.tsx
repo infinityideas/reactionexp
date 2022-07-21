@@ -37,6 +37,7 @@ class Exp extends React.Component<ExpProps, ExpState> {
     private timeout: any
     private currentTime: number
     private expref: any
+    private breaktime: any
 
     constructor(props: any) {
         super(props);
@@ -57,6 +58,8 @@ class Exp extends React.Component<ExpProps, ExpState> {
 
         this.timeout = -99;
         this.currentTime = -99;
+        this.breaktime = -99;
+
         this.keyDown = this.keyDown.bind(this);
         this.afterBreak = this.afterBreak.bind(this);
         this.getCurrent = this.getCurrent.bind(this);
@@ -81,7 +84,9 @@ class Exp extends React.Component<ExpProps, ExpState> {
         }
 
         if (((((e.keyCode === nsKey) || (e.keyCode === sKey)) && this.props.type != "baseline1") || ((e.keyCode === settings.baseline1key) && this.props.type == "baseline1")) && this.state.break) {
-            this.afterBreak();
+            if (Date.now()-this.breaktime >= settings.breakdelay) {
+                this.afterBreak();
+            }
         }
 
         if (((((e.keyCode === nsKey) || (e.keyCode === sKey)) && this.props.type != "baseline1") || ((e.keyCode === settings.baseline1key) && this.props.type == "baseline1")) && !this.state.waiting && this.state.waited && !this.state.break) {
@@ -243,6 +248,7 @@ class Exp extends React.Component<ExpProps, ExpState> {
 
     getCurrent() {
         if (this.state.break) {
+            this.breaktime = Date.now();
             return (
                 <Break type={this.props.type}/>
             )

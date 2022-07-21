@@ -1,4 +1,5 @@
 import React from 'react';
+import Break from '../components/exppages/Break';
 import Finished from '../components/exppages/Finished';
 import ImageShow from '../components/exppages/ImageShow';
 import Loading from '../components/exppages/Loading';
@@ -22,7 +23,8 @@ interface Baseline3State {
     currentImageInSet: number,
     betweenSets: boolean,
     submission: any,
-    finished: boolean
+    finished: boolean,
+    break: boolean
 }
 
 const sameKey: number = 83;
@@ -32,6 +34,7 @@ class Baseline3 extends React.Component<{}, Baseline3State> {
     private expref: any;
     private currentTime: number;
     private timeouts: any;
+    private breaktime: any;
 
     constructor(props: any) {
         super(props);
@@ -42,6 +45,7 @@ class Baseline3 extends React.Component<{}, Baseline3State> {
         this.expref = React.createRef();
         this.currentTime = 0;
         this.timeouts = [0,0,0];
+        this.breaktime = -99;
 
         this.state = {
             HITID: "",
@@ -56,7 +60,8 @@ class Baseline3 extends React.Component<{}, Baseline3State> {
             currentImageInSet: 0,
             betweenSets: false,
             submission: {},
-            finished: false
+            finished: false,
+            break: false
         }
     }
 
@@ -97,20 +102,20 @@ class Baseline3 extends React.Component<{}, Baseline3State> {
     }
 
     componentDidUpdate() {
-        if (!this.state.waitingStart && !this.state.waitingExp && !this.state.betweenSets && this.state.currentImageInSet == 0) {
+        if (!this.state.waitingStart && !this.state.waitingExp && !this.state.betweenSets && !this.state.break && this.state.currentImageInSet == 0) {
             this.timeouts[0] = setTimeout(() => {
                 this.setState({
                     currentImageInSet: 1,
                     waitingExp: true
                 })
             }, settings.baselineImageShow);
-        } else if (this.state.waitingExp && this.state.currentImageInSet == 1) {
+        } else if (this.state.waitingExp && this.state.currentImageInSet == 1 && !this.state.break) {
             this.timeouts[1] = setTimeout(() => {
                 this.setState({
                     waitingExp: false
                 })
             }, settings.baselineImageBetween)
-        } else if (!this.state.waitingExp && this.state.currentImageInSet == 1) {
+        } else if (!this.state.waitingExp && this.state.currentImageInSet == 1 && !this.state.break) {
             this.timeouts[2] = setTimeout(() => {
                 this.setState({
                     betweenSets: true,
@@ -122,6 +127,20 @@ class Baseline3 extends React.Component<{}, Baseline3State> {
     }
 
     keyDown(e: any) {
+        if (this.state.break && ((e.keyCode == sameKey) || (e.keyCode == diffKey)) && ((Date.now()-this.breaktime)>=settings.breakdelay)) {
+            this.setState({
+                waitingExp: true,
+                break: false
+            });
+            setTimeout(() => {
+                this.setState({
+                    showingSet: true,
+                    currentSet: this.state.currentSet+1,
+                    waitingExp: false,
+                });
+            }, getRndInteger(1000, 1500));
+            return;
+        }
         if (this.state.waitingStart && ((e.keyCode == sameKey) || (e.keyCode == diffKey))) {
             this.expref.current.webkitRequestFullscreen();
             this.setState({
@@ -183,15 +202,25 @@ class Baseline3 extends React.Component<{}, Baseline3State> {
                 currentImageInSet: 0,
             });
 
-            setTimeout(() => {
-                this.setState({
-                    betweenSets: false,
-                    showingSet: true,
-                    submission: toSubmit,
-                    currentSet: this.state.currentSet+1,
-                    waitingExp: false
-                })
-            }, getRndInteger(1000, 1500));
+            if (this.state.currentSet+1 == 50) {
+                setTimeout(() => {
+                    this.setState({
+                        betweenSets: false,
+                        break: true,
+                        submission: toSubmit,
+                    })
+                }, getRndInteger(1000, 1500));
+            } else {
+                setTimeout(() => {
+                    this.setState({
+                        betweenSets: false,
+                        showingSet: true,
+                        submission: toSubmit,
+                        currentSet: this.state.currentSet+1,
+                        waitingExp: false
+                    })
+                }, getRndInteger(1000, 1500));
+            }
         }
     }
 
@@ -199,6 +228,11 @@ class Baseline3 extends React.Component<{}, Baseline3State> {
         if (!this.state.ready) {
             return (
                 <Loading />
+            )
+        } else if (this.state.break) {
+            this.breaktime = Date.now();
+            return (
+                <Break type={"baseline3"}/>
             )
         } else if (this.state.finished) {
             return (
