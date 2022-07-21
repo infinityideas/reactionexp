@@ -1,6 +1,6 @@
 export const settings = {
     time: 300,
-    flaskServer: "http://symmetryflask-dev.herokuapp.com/",
+    flaskServer: "https://symmetryflask-dev.herokuapp.com/",
     KORAPIKey: "4f489fad-85bf-406b-bc17-47138a495508",
     nsKey: 65,
     sKey: 83,
