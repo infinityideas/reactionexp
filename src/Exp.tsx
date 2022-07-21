@@ -37,6 +37,7 @@ class Exp extends React.Component<ExpProps, ExpState> {
     private timeout: any
     private currentTime: number
     private expref: any
+    private breaktime: any
 
     constructor(props: any) {
         super(props);
@@ -57,6 +58,8 @@ class Exp extends React.Component<ExpProps, ExpState> {
 
         this.timeout = -99;
         this.currentTime = -99;
+        this.breaktime = -99;
+
         this.keyDown = this.keyDown.bind(this);
         this.afterBreak = this.afterBreak.bind(this);
         this.getCurrent = this.getCurrent.bind(this);
@@ -65,7 +68,7 @@ class Exp extends React.Component<ExpProps, ExpState> {
 
     keyDown(e: any) {
         const timeTaken = Date.now()-this.currentTime;
-        if ((e.keyCode === nsKey || e.keyCode === sKey) && !this.state.waited) {
+        if (((((e.keyCode === nsKey) || (e.keyCode === sKey)) && this.props.type != "baseline1") || ((e.keyCode === settings.baseline1key) && this.props.type == "baseline1"))&& !this.state.waited) {
             this.expref.current.webkitRequestFullscreen();
             this.setState({
                 waiting: true
@@ -80,17 +83,29 @@ class Exp extends React.Component<ExpProps, ExpState> {
             return
         }
 
-        if (((e.keyCode === nsKey) || (e.keyCode === sKey)) && this.state.break) {
-            this.afterBreak();
+        if (((((e.keyCode === nsKey) || (e.keyCode === sKey)) && this.props.type != "baseline1") || ((e.keyCode === settings.baseline1key) && this.props.type == "baseline1")) && this.state.break) {
+            if (Date.now()-this.breaktime >= settings.breakdelay) {
+                this.afterBreak();
+            }
         }
 
-        if (((e.keyCode === nsKey) || (e.keyCode === sKey)) && !this.state.waiting && this.state.waited && !this.state.break) {
+        if (((((e.keyCode === nsKey) || (e.keyCode === sKey)) && this.props.type != "baseline1") || ((e.keyCode === settings.baseline1key) && this.props.type == "baseline1")) && !this.state.waiting && this.state.waited && !this.state.break) {
             let currentSubmit: any = this.state.toSubmit;
+            let currentAnswer = "";
+
+            if (e.keyCode === nsKey) {
+                currentAnswer = "NS";
+            } else if (e.keyCode === sKey) {
+                currentAnswer = "S";
+            } else if (e.keyCode === settings.baseline1key) {
+                currentAnswer = "NA";
+            }
             currentSubmit[this.state.currentImage.toString()] = {
                 time: timeTaken,
+                type: this.props.type,
                 imageNumber: this.state.order[this.state.currentImage],
                 imageURL: this.state.images[this.state.order[this.state.currentImage]],
-                answer: e.keyCode === nsKey ? "NS" : "S",
+                answer: currentAnswer,
                 hit: this.state.HITID,
                 screenSize: ((window.innerWidth).toString())+"x"+((window.innerHeight).toString())
             }
@@ -116,7 +131,19 @@ class Exp extends React.Component<ExpProps, ExpState> {
                 }).then((resp: any) => {
                     document.removeEventListener("keydown", this.keyDown);
                     document.exitFullscreen();
-                    window.localStorage.removeItem("SYMM_PROLIFIC_PID");
+                    if ((this.props.type != "baseline1") && (this.props.type != "baseline2")) {
+                        window.localStorage.removeItem("SYMM_PROLIFIC_PID");
+                    }
+                    if (this.props.type == "baseline1") {
+                        if (window.localStorage.getItem("SYMM_PROLIFIC_PID") == null) {
+                            window.localStorage.setItem("SYMM_BASELINE_HITID", resp["data"]["id"]);
+                        }
+                        window.location.replace("/baseline/screen2");
+                        return;
+                    } else if (this.props.type == "baseline2") {
+                        window.location.replace("/baseline/screen3");
+                        return;
+                    }
                     setTimeout(() => {
                         this.setState({
                             finished: true,
@@ -171,12 +198,22 @@ class Exp extends React.Component<ExpProps, ExpState> {
 
             document.addEventListener("keydown", this.keyDown);
 
+            let HITID = "";
+
+            if (window.localStorage.getItem("SYMM_PROLIFIC_PID") == null) {
+                if (window.localStorage.getItem("SYMM_BASELINE_HITID") != null) {
+                    HITID = (window.localStorage.getItem("SYMM_BASELINE_HITID") as string)
+                }
+            } else {
+                HITID = (window.localStorage.getItem("SYMM_PROLIFIC_PID") as string)
+            }
+
             this.setState({
                 order: response["data"]["order"],
                 images: response["data"]["links"],
                 ready: true,
                 showingImage: true,
-                HITID: window.localStorage.getItem("SYMM_PROLIFIC_PID") == null ? "" : (window.localStorage.getItem("SYMM_PROLIFIC_PID") as string)
+                HITID: HITID
             })
         });
     }
@@ -211,8 +248,9 @@ class Exp extends React.Component<ExpProps, ExpState> {
 
     getCurrent() {
         if (this.state.break) {
+            this.breaktime = Date.now();
             return (
-                <Break/>
+                <Break type={this.props.type}/>
             )
         }
         if (this.state.finished) {
@@ -248,7 +286,7 @@ class Exp extends React.Component<ExpProps, ExpState> {
         }
         if (!this.state.waited) {
             return (
-                <Waited/>
+                <Waited type={this.props.type}/>
             )
         }
         if (this.state.showingImage) {

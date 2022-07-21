@@ -9,5 +9,11 @@ export const settings = {
     practice_required_acc: 0.75,
     waittime: 1000,
     waitmin: 1000,
-    waitmax: 1500
+    waitmax: 1500,
+    breakdelay: 2000,
+
+    baseline1key: 32,
+    baseline1key_string: "space bar",
+    baselineImageShow: 300,
+    baselineImageBetween: 300
 }

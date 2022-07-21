@@ -3,29 +3,28 @@ import { settings } from './scripts/config';
 import { Link, useSearchParams } from "react-router-dom";
 import example from './content/images/PictureEx.png';
 import { useState } from 'react';
+import prolific_setup from './scripts/prolific_setup';
+import WelcomeScreen from './components/instructions/WelcomeScreen';
 
 import symm1 from './content/images/Symm1.png';
 import symm2 from './content/images/Symm2.png';
 import nsymm1 from './content/images/NSymm1.png';
 import nsymm2 from './content/images/NSymm2.png';
+import ImageDemo from './components/instructions/ImageDemo';
 
 function App() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentStep, setCurrentStep] = useState(0);
 
-  window.localStorage.removeItem("SYMM_PROLIFIC_PID");
+  prolific_setup(searchParams);
 
-  if (searchParams.get("PROLIFIC_PID") != null) {
-    window.localStorage.setItem('SYMM_PROLIFIC_PID', searchParams.get("PROLIFIC_PID") as string)
+  const newCurrent = (newCurrentStep: any) => {
+    setCurrentStep(newCurrentStep);
   }
 
   if (currentStep == 0) {
     return (
-      <div className="container" style={{fontFamily: "arial"}}>
-        <h1><span style={{fontSize: "0.75em"}}>Welcome to the</span><br/><span style={{color: "darkblue"}}>Symmetry Perception Study</span></h1>
-        <br/><br/><h3 style={{fontWeight: "normal"}}>We appreciate your participation.</h3><br/><h3 style={{fontWeight: "normal"}}>This study will take roughly 20 minutes.</h3><h3 style={{fontWeight: "normal"}}>Please sit approximately 50cm from the screen.<br/>Please make sure that your screen's brightness is turned up.</h3><br/>
-        <button style={{fontSize: "1.5em"}} onClick={() => {setCurrentStep(currentStep+1)}}>Next ➡️</button>
-      </div>
+      <WelcomeScreen headerText="Symmetry Perception Study" currentStep={currentStep} setCurrentStep={newCurrent} numParts=""/>
     );
   } else if (currentStep == 1) {
     return (
@@ -47,30 +46,7 @@ on the A key and the right-hand index finger on the S key.</p>
     )
   } else if (currentStep == 2) {
     return (
-      <div className="container" style={{fontFamily: "arial"}}>
-        <h1><span style={{fontSize: "0.75em", color: "maroon"}}>Sample images</span></h1>
-        <div style={{width: "90%", margin: "auto", textAlign: "center", borderRadius: "10px", backgroundColor: "rgb(229, 239, 219)"}}>
-          <p style={{fontSize: "1.2em", paddingTop: 10}}>Here are two examples of <em style={{color: "rgb(44, 113, 186)"}}><strong>S</strong>ymmetric</em> images.
-          <br/>Notice that the left and right sides of these images are identical but flipped.</p>
-          <table>
-            <tr style={{border: "none"}}>
-              <td style={{width: "50%", textAlign: "center"}}><img src={symm1} width="95%" /></td>
-              <td style={{width: "50%", textAlign: "center"}}><img src={symm2} width="95%" /></td>
-            </tr>
-          </table>
-        </div>
-        <div style={{width: "90%", margin: "auto", textAlign: "center", borderRadius: "10px", backgroundColor: "rgb(229, 239, 219)"}}>
-          <p style={{fontSize: "1.2em", paddingTop: 10}}>Here are two examples of <em style={{color: "rgb(44, 113, 186)"}}><strong>A</strong>symmetric</em> images.
-          <br/>The left and right sides of these images are different from each other.</p>
-          <table>
-            <tr style={{border: "none"}}>
-              <td style={{width: "50%", textAlign: "center"}}><img src={nsymm1} width="95%" /></td>
-              <td style={{width: "50%", textAlign: "center"}}><img src={nsymm2} width="95%" /></td>
-            </tr>
-          </table>
-        </div><br/>
-        <Link to="practice"><button style={{fontSize: "1.5em"}}>Next ➡️</button></Link>
-      </div>
+      <ImageDemo symm1={symm1} symm2={symm2} nsymm1={nsymm1} nsymm2={nsymm2} to="practice"/>
     )
   } else {
     return (

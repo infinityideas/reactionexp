@@ -8,7 +8,7 @@
 > The website is written with the React (Facebook, Inc.) front-end framework and the backend is Flask (hosted by Heroku @ Salesforce, Inc.). The full list of data processors are as follows:
 > 
 > ***DATA PROCESSORS***
-> * Analytics: *Google, Inc.*
+> * Analytics: *Google, Inc. and New Relic, Inc.*
 > * Web Hosting: *Vercel, Inc.*
 > * File/Image Hosting: *Cloudinary, Inc.*
 > * Database: *MongoDB, Inc.*
