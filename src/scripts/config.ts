@@ -1,6 +1,6 @@
 export const settings = {
     time: 300,
-    flaskServer: "http://10.0.0.218:5001/",
+    flaskServer: "http://symmetryflask-dev.herokuapp.com/",
     KORAPIKey: "4f489fad-85bf-406b-bc17-47138a495508",
     nsKey: 65,
     sKey: 83,
@@ -16,5 +16,3 @@ export const settings = {
     baselineImageShow: 300,
     baselineImageBetween: 300
 }
-
-//flaskServer: "https://symmetryflask.herokuapp.com/",
