@@ -76,9 +76,14 @@ class Exp extends React.Component<ExpProps, ExpState> {
             setTimeout(()=> {
                 this.setState({
                     waited: true,
-                    waiting: false,
+                    waiting: true,
                     started: true
-                })
+                });
+                setTimeout(() => {
+                    this.setState({
+                        waiting: false
+                    })
+                }, 1500)
             }, 5000);
             return
         }
